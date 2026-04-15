@@ -40,6 +40,8 @@
   .map-title { font-family: "Syne", sans-serif; font-size: 2rem; }
   .map-summary-btn { margin-top: 10px; padding: 8px 20px; background: rgba(200,169,110,0.12); border: 1px solid var(--gold); color: var(--gold); border-radius: 20px; font-family: "Syne", sans-serif; font-size: 0.7rem; cursor: pointer; transition: all 0.15s; }
   .map-summary-btn:hover { background: rgba(200,169,110,0.25); }
+  .map-reset-btn { margin-top: 6px; padding: 6px 16px; background: transparent; border: 1px solid rgba(224,92,92,0.4); color: rgba(224,92,92,0.7); border-radius: 20px; font-family: "Syne", sans-serif; font-size: 0.65rem; cursor: pointer; transition: all 0.15s; }
+  .map-reset-btn:hover { background: rgba(224,92,92,0.12); border-color: var(--red); color: var(--red); }
   .map-sub { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
 
   /* cosmic canvas */
@@ -393,6 +395,7 @@
     <div class="map-title shimmer">MISION ARTEMIS II</div>
     <div class="map-sub">Selecciona tu siguiente misión</div>
     <button class="map-summary-btn" id="map-summary-btn" onclick="showSummary()" style="display:none">📋 Ver resumen y regalo</button>
+    <button class="map-reset-btn" id="map-reset-btn" onclick="resetProgress()">↺ Reiniciar</button>
   </div>
   <div class="level-map-wrap" id="level-map-wrap">
     <div class="level-path-line"></div>
@@ -715,23 +718,7 @@ function speakMission() {
 }
 
 var LEVELS = [
-  { id:0, name:"LUNA I",       phase:"LUNA",     phaseIcon:"🌕", table:2, order:"orden",
-    desc:"Tabla del 2 · En orden",
-    briefs:[
-      "La Orion lleva a la tripulación más lejos de casa que cualquier nave tripulada desde Apollo 17. La Luna está a 384.400 km de la Tierra.",
-      "La superficie de la Luna está cubierta de un polvo muy fino llamado regolito. Es tan abrasivo que destruyó los trajes del Apollo en pocas horas.",
-      "Desde la Luna, la Tierra parece cuatro veces más grande que la Luna vista desde la Tierra — una canica azul perfecta flotando en la oscuridad."
-    ]
-  },
-  { id:1, name:"LUNA II",      phase:"LUNA",     phaseIcon:"🌕", table:2, order:"aleatorio",
-    desc:"Tabla del 2 · Aleatoria",
-    briefs:[
-      "La Luna no tiene atmósfera, así que los meteoritos impactan directamente sin frenarse. Por eso tiene tantos cráteres en su superficie.",
-      "Un día en la Luna dura casi 30 días terrestres. La temperatura varía de -173°C de noche a +127°C de día — sin ropa espacial, imposible.",
-      "Los pasos de los astronautas del Apollo siguen ahí intactos. Sin viento ni lluvia, durarán millones de años en el polvo lunar."
-    ]
-  },
-  { id:2, name:"TRAVESÍA I",   phase:"TRAVESÍA", phaseIcon:"🛸", table:5, order:"orden",
+  { id:0, name:"TRAVESÍA I",   phase:"TRAVESÍA", phaseIcon:"🛸", table:5, order:"orden",
     desc:"Tabla del 5 · En orden",
     briefs:[
       "A mitad de la travesía, la Tierra se ve tan pequeña que puedes taparla con el pulgar levantado. Aldrin lo llamó 'el mayor momento de perspectiva de la historia'.",
@@ -739,12 +726,28 @@ var LEVELS = [
       "Entre la Tierra y la Luna no hay nada — solo vacío absoluto a -270°C. La cápsula Orion protege a la tripulación de ese frío mortal."
     ]
   },
-  { id:3, name:"TRAVESÍA II",  phase:"TRAVESÍA", phaseIcon:"🛸", table:5, order:"aleatorio",
+  { id:1, name:"TRAVESÍA II",  phase:"TRAVESÍA", phaseIcon:"🛸", table:5, order:"aleatorio",
     desc:"Tabla del 5 · Aleatoria",
     briefs:[
       "Artemis II es la primera misión tripulada que se aleja tanto desde Apollo 17 en 1972 — ¡más de 50 años sin llegar tan lejos del planeta!",
       "Los astronautas duermen en turnos para que siempre haya alguien vigilando la nave. En el espacio, no puedes poner el piloto automático.",
       "La Orion tiene 11 ventanas. Wiseman, Glover, Koch y Hansen fotografiaron la Tierra entera por primera vez en décadas con sus propios ojos."
+    ]
+  },
+  { id:2, name:"LUNA I",       phase:"LUNA",     phaseIcon:"🌕", table:2, order:"orden",
+    desc:"Tabla del 2 · En orden",
+    briefs:[
+      "La Orion lleva a la tripulación más lejos de casa que cualquier nave tripulada desde Apollo 17. La Luna está a 384.400 km de la Tierra.",
+      "La superficie de la Luna está cubierta de un polvo muy fino llamado regolito. Es tan abrasivo que destruyó los trajes del Apollo en pocas horas.",
+      "Desde la Luna, la Tierra parece cuatro veces más grande que la Luna vista desde la Tierra — una canica azul perfecta flotando en la oscuridad."
+    ]
+  },
+  { id:3, name:"LUNA II",      phase:"LUNA",     phaseIcon:"🌕", table:2, order:"aleatorio",
+    desc:"Tabla del 2 · Aleatoria",
+    briefs:[
+      "La Luna no tiene atmósfera, así que los meteoritos impactan directamente sin frenarse. Por eso tiene tantos cráteres en su superficie.",
+      "Un día en la Luna dura casi 30 días terrestres. La temperatura varía de -173°C de noche a +127°C de día — sin ropa espacial, imposible.",
+      "Los pasos de los astronautas del Apollo siguen ahí intactos. Sin viento ni lluvia, durarán millones de años en el polvo lunar."
     ]
   },
   { id:4, name:"REGRESO I",    phase:"REGRESO",  phaseIcon:"🪂", table:3, order:"orden",
@@ -766,8 +769,8 @@ var LEVELS = [
 ];
 
 var CHECKPOINTS = [
-  { label:"LUNA",     levels:[0,1], icon:"🌕", msg:"¡LUNA SUPERADA!\nLa travesía comienza..." },
-  { label:"TRAVESÍA", levels:[2,3], icon:"🛸", msg:"¡TRAVESÍA COMPLETADA!\nPreparando el regreso..." },
+  { label:"TRAVESÍA", levels:[0,1], icon:"🛸", msg:"¡TRAVESÍA SUPERADA!\n¡Rumbo a la Luna!" },
+  { label:"LUNA",     levels:[2,3], icon:"🌕", msg:"¡LUNA CONQUISTADA!\nPreparando el regreso..." },
   { label:"REGRESO",  levels:[4,5], icon:"🪂", msg:"¡MISIÓN COMPLETADA!\nBienvenido a casa, Nil!" },
 ];
 
@@ -789,6 +792,13 @@ var state = {
 
 function saveProgress() {
   localStorage.setItem("tablas_nil_v4", JSON.stringify(state.progress));
+}
+function resetProgress() {
+  if (!confirm("¿Reiniciar toda la misión? Se perderá el progreso guardado.")) return;
+  localStorage.removeItem("tablas_nil_v4");
+  state.progress = {};
+  renderLevelMap();
+  document.getElementById("map-summary-btn").style.display = "none";
 }
 // Cargar progreso guardado
 (function() {
@@ -1274,7 +1284,40 @@ renderLevelMap();
 window.addEventListener("resize", renderLevelMap);
 document.getElementById("wel-start-btn").onclick = function() { showScreen("map-screen"); };
 
+function playVictoryFanfare() {
+  try {
+    var ac = new (window.AudioContext || window.webkitAudioContext)();
+    var now = ac.currentTime;
+    // Fanfare: Da-Da-Da-DAAAA-Re-Mi-DOOOO!
+    var seq = [
+      {f:523.25, t:0.00, d:0.12, v:0.35},
+      {f:523.25, t:0.16, d:0.12, v:0.35},
+      {f:523.25, t:0.32, d:0.12, v:0.35},
+      {f:783.99, t:0.48, d:0.45, v:0.45},
+      {f:659.26, t:0.96, d:0.12, v:0.35},
+      {f:783.99, t:1.12, d:0.12, v:0.35},
+      {f:1046.5, t:1.28, d:1.20, v:0.55},
+    ];
+    seq.forEach(function(n) {
+      ['sawtooth','triangle'].forEach(function(type, i) {
+        var osc = ac.createOscillator();
+        var gain = ac.createGain();
+        osc.connect(gain); gain.connect(ac.destination);
+        osc.type = type;
+        osc.frequency.value = i === 1 ? n.f * 0.5 : n.f;
+        var vol = i === 1 ? n.v * 0.4 : n.v;
+        gain.gain.setValueAtTime(0, now + n.t);
+        gain.gain.linearRampToValueAtTime(vol, now + n.t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.d + 0.05);
+      });
+    });
+  } catch(e) {}
+}
+
 function openGift() {
+  playVictoryFanfare();
   document.getElementById("cel-gift").style.display = "none";
   var reveal = document.getElementById("cel-gift-reveal");
   reveal.style.display = "flex";
@@ -1290,7 +1333,7 @@ function openGift() {
   }
   // fill stars + rank
   var totalStars = LEVELS.reduce(function(s,lvl){ return s+(state.progress[lvl.id]?state.progress[lvl.id].stars:0);},0);
-  document.getElementById("card-stars").textContent = "⭐".repeat(totalStars)+"☆".repeat(24-totalStars);
+  document.getElementById("card-stars").textContent = "⭐".repeat(totalStars)+"☆".repeat(18-totalStars);
   var rk = getMissionRank();
   document.getElementById("card-rank-display").textContent = rk.icon+" "+rk.rank;
   startConfetti();
